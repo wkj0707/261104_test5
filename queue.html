@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>VPD 해석 업무 접수 큐</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--navy:#0b1746;--blue:#2342a5;--accent:#4169e1;--bg:#f4f7fc;--text:#172342;--muted:#64748b;--line:#dfe6f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Malgun Gothic",sans-serif}button,input,select{font:inherit}a{text-decoration:none;color:inherit}button{cursor:pointer}
+header{background:var(--navy);color:#fff;position:sticky;top:0;z-index:5}.top{max-width:1440px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:13px 26px;gap:12px;flex-wrap:wrap}.brand{font-weight:800;display:flex;gap:12px;align-items:center}.mark{background:linear-gradient(135deg,#456ef5,#14277b);padding:9px 13px;border-radius:12px}.nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.nav a{color:#dce5ff;font-size:13px}.nav .admin{padding:8px 16px;border:1px solid #8aa6fa;border-radius:8px;background:#3155c9;color:#fff}
+main{max-width:1440px;margin:auto;padding:28px 26px 70px}.hero{background:linear-gradient(115deg,#0a1545,#243da0);color:#fff;border-radius:22px;padding:30px 34px}.eyebrow{color:#9fb7ff;letter-spacing:.12em;font-weight:800;font-size:11px}.hero h1{font-size:clamp(27px,4vw,42px);line-height:1.25;margin:9px 0}.hero p{color:#d1dcff;margin:0}
+.summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:20px 0}.metric{background:white;border:1px solid var(--line);border-radius:14px;padding:17px}.metric strong{display:block;font-size:28px;line-height:1.2}.metric span{color:var(--muted);font-size:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 22px #1021510a}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.section-title h2{margin:0;font-size:21px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.tab{border:1px solid var(--line);background:#f5f7fd;color:var(--text);border-radius:11px;padding:11px 17px;font-weight:750}.tab[aria-selected=true]{background:var(--blue);color:white;border-color:var(--blue)}.tab .count{font-size:12px;opacity:.75;margin-left:6px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.filters label{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:700}.filters input,.filters select{border:1px solid var(--line);padding:10px 12px;border-radius:9px;background:white;min-width:155px;color:var(--text)}.filters input{min-width:min(260px,80vw)}
+.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:930px;text-align:left}th{background:#f1f5fc;color:#4c6288;font-size:12px}th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}td{font-size:13px}td strong{font-size:14px}.sub{display:block;color:var(--muted);font-size:12px}.badge{display:inline-block;padding:4px 9px;border-radius:100px;background:#eaf0ff;color:#2844a2;font-size:12px;font-weight:750}.badge.요청{background:#fff4d8;color:#9d6407}.badge.검토대기{background:#f1eaff;color:#6b46a7}.badge.진행{background:#e9efff;color:#2854b3}.badge.완료{background:#d9f7ed;color:#08735e}.badge.보류{background:#ffebeb;color:#a93c3c}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;background:white;padding:9px 13px;font-weight:750;color:#2449ab;gap:6px}.btn:hover,.tab:hover{filter:brightness(.96)}.btn.primary{background:#4169e1;border-color:#4169e1;color:white}.empty{text-align:center;padding:35px;color:var(--muted)}.note{font-size:12px;color:var(--muted);margin-top:15px}.priority{font-weight:750;color:#b06c08}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #86acff;outline-offset:2px}
+@media(max-width:800px){.summary{grid-template-columns:repeat(2,1fr)}main{padding:15px 12px}.hero{padding:24px}.card{padding:14px}.top{padding:12px}}
+</style></head><body>
+<header><div class="top"><div class="brand"><span class="mark">VPD</span><span>해석 업무 접수 큐<small class="sub" style="color:#aabdf7">Virtual Product Development</small></span></div><nav class="nav" aria-label="페이지 이동"><a href="index.html">← 메인 대시보드</a><a href="admin.html" class="admin" target="_blank" rel="noopener">▣ Admin ↗</a></nav></div></header>
+<main>
+<section class="hero"><div class="eyebrow">CAE REQUEST QUEUE · VPD</div><h1>해석 분야별 접수 업무 리스트</h1><p>구조피로 · 소음진동 · 열유동별로 접수된 업무를 확인하고, 관리자 화면에서 검토 및 진행 상태를 변경할 수 있습니다.</p></section>
+<div class="summary" id="summary" aria-label="업무 상태별 건수"></div>
+<section class="card"><div class="section-title"><h2>업무 접수 큐</h2><button class="btn" id="refresh" type="button">↻ 새로고침</button></div>
+<div class="tabs" role="tablist" aria-label="해석 업무 분야">
+<button class="tab" role="tab" aria-selected="true" data-discipline="">전체 <span class="count" id="countAll"></span></button>
+<button class="tab" role="tab" aria-selected="false" data-discipline="구조피로">구조피로 <span class="count" id="countStructure"></span></button>
+<button class="tab" role="tab" aria-selected="false" data-discipline="소음진동">소음진동 <span class="count" id="countNoise"></span></button>
+<button class="tab" role="tab" aria-selected="false" data-discipline="열유동">열유동 <span class="count" id="countThermal"></span></button>
+</div>
+<div class="filters">
+<label>상태<select id="status"><option value="">전체 상태</option><option>요청</option><option>검토대기</option><option>진행</option><option>완료</option><option>보류</option></select></label>
+<label>업무 유형<select id="category"><option value="">전체 유형</option><option>지게차 개발</option><option>원가절감</option><option>신제품 개발</option><option>기타</option></select></label>
+<label>검색<input id="search" type="search" placeholder="업무명, 소속, 담당자 검색"></label>
+</div>
+<div class="table-scroll"><table><thead><tr><th>순번</th><th>업무명 / 유형</th><th>해석 분야</th><th>신청자</th><th>담당자</th><th>상태</th><th>진행률</th><th>희망 완료일</th><th>관리</th></tr></thead><tbody id="queueRows"></tbody></table></div>
+<p class="note">신규 요청과 검토대기를 우선 표시합니다. 예제 업무는 샘플이며, 같은 브라우저에서 등록한 신청 내용은 자동 반영됩니다. 신청자 상세 요청사항과 첨부파일은 관리자 화면에서 확인하세요.</p>
+</section></main>
+<script type="module">
+const STORE="vpd-dashboard-tasks-v1";
+const validStatus=["요청","검토대기","진행","완료","보류"];
+const disciplines=["구조피로","소음진동","열유동"];
+const $=s=>document.querySelector(s);
+const safe=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let selected="";
+let tasks=[];
+const samples=[
+["example-1","마스트 구조 피로 수명 검토","지게차 개발","구조피로","구조 담당 1","진행",65],
+["example-2","차체 브라켓 경량화 구조 검증","원가절감","구조피로","구조 담당 2","진행",40],
+["example-3","신규 차종 프레임 강도 검토","신제품 개발","구조피로","구조 담당 3","요청",0],
+["example-4","동력계 마운트 진동 특성 분석","지게차 개발","소음진동","NVH 담당 1","검토대기",85],
+["example-5","운전석 진동 저감 대안 검토","원가절감","소음진동","NVH 담당 2","진행",30],
+["example-6","신제품 냉각 유로 성능 분석","신제품 개발","열유동","열유동 담당","요청",0]
+].map(([id,title,category,discipline,owner,status,progress])=>({id,title,category,discipline,owner,status,progress,due:"—"}));
+function load(){
+ try{
+ const data=JSON.parse(localStorage.getItem(STORE)||"null");
+ tasks=Array.isArray(data)?data.filter(t=>t&&typeof t.id==="string"&&typeof t.title==="string"&&disciplines.includes(t.discipline)&&validStatus.includes(t.status)).slice(0,2000):samples;
+ }catch{tasks=[]}
+ render();
+}
+function render(){
+ const all=tasks;
+ $("#summary").innerHTML=[["전체 접수",all.length],...validStatus.map(s=>[s,all.filter(t=>t.status===s).length])].map(([label,count])=>`<div class="metric"><strong>${count}</strong><span>${label}</span></div>`).join("");
+ for(const [id,field] of [["countAll",""],["countStructure","구조피로"],["countNoise","소음진동"],["countThermal","열유동"]])$("#"+id).textContent=all.filter(t=>!field||t.discipline===field).length+"건";
+ const status=$("#status").value,category=$("#category").value,query=$("#search").value.trim().toLowerCase();
+ const order={"요청":0,"검토대기":1,"진행":2,"보류":3,"완료":4};
+ const list=all.filter(t=>(!selected||t.discipline===selected)&&(!status||t.status===status)&&(!category||t.category===category)&&(!query||[t.title,t.requestDept,t.requestName,t.owner,t.category].join(" ").toLowerCase().includes(query))).sort((a,b)=>(order[a.status]-order[b.status])||String(a.due||"").localeCompare(String(b.due||""))||a.title.localeCompare(b.title,"ko"));
+ const tbody=$("#queueRows");tbody.replaceChildren();
+ if(!list.length){tbody.innerHTML='<tr><td colspan="9" class="empty">해당 조건에 등록된 업무가 없습니다.</td></tr>';return}
+ list.forEach((t,i)=>{
+ const tr=document.createElement("tr");
+ const fields=[String(i+1),t.title,t.discipline,`${t.requestDept||"—"} / ${t.requestName||"예시 업무"}`,t.owner||"미배정",t.status,`${Math.max(0,Math.min(100,Number(t.progress)||0))}%`,t.due||"—"];
+ fields.forEach((value,j)=>{const td=document.createElement("td");if(j===1){const strong=document.createElement("strong");strong.textContent=value;td.append(strong);const small=document.createElement("span");small.className="sub";small.textContent=t.category||"";td.append(small)}else if(j===5){const badge=document.createElement("span");badge.className="badge "+t.status;badge.textContent=value;td.append(badge)}else{td.textContent=value}tr.append(td)});
+ const td=document.createElement("td"),link=document.createElement("a");link.className="btn";link.href="admin.html?task="+encodeURIComponent(t.id);link.target="_blank";link.rel="noopener";link.textContent="검토 ↗";link.setAttribute("aria-label",t.title+" 관리자 검토 화면");td.append(link);tr.append(td);tbody.append(tr);
+ });
+}
+document.querySelectorAll("[data-discipline]").forEach(button=>button.addEventListener("click",()=>{selected=button.dataset.discipline;document.querySelectorAll("[data-discipline]").forEach(b=>b.setAttribute("aria-selected",String(b===button)));render()}));
+for(const id of ["status","category","search"])$("#"+id).addEventListener(id==="search"?"input":"change",render);
+$("#refresh").addEventListener("click",load);
+addEventListener("storage",e=>{if(e.key===STORE)load()});
+addEventListener("focus",load);
+load();
+</script></body></html>
